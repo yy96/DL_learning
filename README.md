@@ -68,3 +68,7 @@ deactivate
 
 - `mlp_backprop.ipynb`: Re-derive backpropagation for an MLP and implement a 2-3 layer MLP from scratch using NumPy. Includes visualization of activations and gradients.
 
+- `cifar10_cnn.ipynb`: Implement Conv-BN-ReLU blocks, train on CIFAR-10, compare SGD vs AdamW optimizers, add residual connections, and perform ablation studies (removing BatchNorm, augmentations, and residuals to understand their contributions).
+
+- `lstm_char_modeling.ipynb`: Implement an LSTM for character-level language modeling. Observe exposure bias, teacher forcing, and gradient clipping. Compare training with and without teacher forcing, analyze gradient norms, and generate text samples.
+
