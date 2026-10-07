@@ -7,6 +7,7 @@ This repository contains implementations and experiments for learning deep learn
 ```
 DL_learning/
 ├── notebooks/          # Jupyter notebooks for experiments
+├── docs/               # Standalone HTML visualizations
 ├── requirements.txt    # Python dependencies
 └── README.md          # This file
 ```
@@ -71,4 +72,13 @@ deactivate
 - `cifar10_cnn.ipynb`: Implement Conv-BN-ReLU blocks, train on CIFAR-10, compare SGD vs AdamW optimizers, add residual connections, and perform ablation studies (removing BatchNorm, augmentations, and residuals to understand their contributions).
 
 - `lstm_char_modeling.ipynb`: Implement an LSTM for character-level language modeling. Observe exposure bias, teacher forcing, and gradient clipping. Compare training with and without teacher forcing, analyze gradient norms, and generate text samples.
+
+- `llm_pretraining_finetuning.ipynb`: Miniature GPT-style transformer covering pre-training (next-token prediction) and three fine-tuning strategies (full FT, LoRA, frozen backbone).
+
+## Visualizations
+
+Open these in a browser (or GitHub Pages once enabled):
+
+- [`docs/llm_architecture.html`](docs/llm_architecture.html) — LLM architecture map (stack overview).
+- [`docs/llm_mindmap.html`](docs/llm_mindmap.html) — interactive LLM architecture mind map.
 

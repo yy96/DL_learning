@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>LLM Architecture Map</title>
+<style>
+  :root {
+    --bg: #0f172a;
+    --panel: #111827;
+    --card: #1e293b;
+    --text: #e5e7eb;
+    --muted: #94a3b8;
+    --blue: #38bdf8;
+    --green: #4ade80;
+    --yellow: #facc15;
+    --pink: #f472b6;
+    --purple: #a78bfa;
+    --orange: #fb923c;
+    --red: #f87171;
+  }
+
+  body {
+    margin: 0;
+    font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: radial-gradient(circle at top, #1e293b 0, var(--bg) 45%);
+    color: var(--text);
+    line-height: 1.5;
+  }
+
+  header {
+    padding: 56px 24px 32px;
+    text-align: center;
+  }
+
+  h1 {
+    font-size: clamp(2rem, 4vw, 4rem);
+    margin: 0 0 12px;
+  }
+
+  .subtitle {
+    max-width: 850px;
+    margin: 0 auto;
+    color: var(--muted);
+    font-size: 1.1rem;
+  }
+
+  .container {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 24px;
+  }
+
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+    margin-bottom: 32px;
+  }
+
+  .pill {
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: #020617;
+    border: 1px solid #334155;
+    color: var(--muted);
+    font-size: 0.9rem;
+  }
+
+  .map {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+  }
+
+  @media (max-width: 900px) {
+    .map { grid-template-columns: 1fr; }
+  }
+
+  .card {
+    background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+    border: 1px solid #334155;
+    border-radius: 22px;
+    padding: 22px;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.25);
+  }
+
+  .card h2 {
+    margin-top: 0;
+    font-size: 1.35rem;
+  }
+
+  .tag {
+    display: inline-block;
+    margin-bottom: 12px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #020617;
+  }
+
+  .blue { background: var(--blue); }
+  .green { background: var(--green); }
+  .yellow { background: var(--yellow); }
+  .pink { background: var(--pink); }
+  .purple { background: var(--purple); }
+  .orange { background: var(--orange); }
+  .red { background: var(--red); }
+
+  .diagram {
+    background: #020617;
+    border: 1px solid #334155;
+    border-radius: 16px;
+    padding: 14px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 0.86rem;
+    white-space: pre-wrap;
+    color: #cbd5e1;
+    margin: 14px 0;
+  }
+
+  .use {
+    color: var(--muted);
+    font-size: 0.95rem;
+  }
+
+  .section-title {
+    margin-top: 54px;
+    font-size: 1.8rem;
+  }
+
+  .axis {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+  }
+
+  @media (max-width: 800px) {
+    .axis { grid-template-columns: 1fr; }
+  }
+
+  details {
+    background: #020617;
+    border: 1px solid #334155;
+    border-radius: 16px;
+    padding: 16px 18px;
+    margin: 12px 0;
+  }
+
+  summary {
+    cursor: pointer;
+    font-weight: 700;
+  }
+
+  footer {
+    text-align: center;
+    color: var(--muted);
+    padding: 48px 24px;
+    font-size: 0.9rem;
+  }
+</style>
+</head>
+
+<body>
+<header>
+  <h1>LLM Architecture Map</h1>
+  <p class="subtitle">
+    A visual taxonomy of model backbones: encoder-only, decoder-only, encoder–decoder,
+    dense Transformers, MoE, state-space models, recurrent models, and hybrids.
+  </p>
+</header>
+
+<div class="container">
+
+  <div class="legend">
+    <span class="pill">Read = encoder</span>
+    <span class="pill">Write = decoder</span>
+    <span class="pill">Route = MoE</span>
+    <span class="pill">Stream = RNN / SSM</span>
+    <span class="pill">Mix = hybrid</span>
+  </div>
+
+  <div class="map">
+
+    <div class="card">
+      <span class="tag blue">Encoder-only</span>
+      <h2>BERT-style: “understand text”</h2>
+      <div class="diagram">Input tokens
+   ↓
+[Bidirectional encoder blocks]
+   ↓
+Contextual representations
+   ↓
+Classifier / embedder / reranker</div>
+      <p><strong>Best for:</strong> classification, embeddings, search, reranking, extraction.</p>
+      <p class="use"><strong>Think:</strong> a reader that sees the whole sentence at once.</p>
+      <p><strong>Examples:</strong> BERT, RoBERTa, DeBERTa-like models.</p>
+    </div>
+
+    <div class="card">
+      <span class="tag green">Decoder-only</span>
+      <h2>GPT-style: “predict next token”</h2>
+      <div class="diagram">Prompt tokens
+   ↓
+[Causal decoder blocks]
+   ↓
+Next-token probabilities
+   ↓
+Generated continuation</div>
+      <p><strong>Best for:</strong> chat, completion, code, reasoning, creative generation.</p>
+      <p class="use"><strong>Think:</strong> a writer that can only look left.</p>
+      <p><strong>Examples:</strong> GPT-style, Llama-style, Mistral-style, Qwen-style models.</p>
+    </div>
+
+    <div class="card">
+      <span class="tag yellow">Encoder–decoder</span>
+      <h2>T5-style: “read then write”</h2>
+      <div class="diagram">Input text → [Encoder] → memory
+                         ↓
+Output prefix → [Decoder + cross-attn]
+                         ↓
+Output text</div>
+      <p><strong>Best for:</strong> translation, summarization, text-to-text transformation.</p>
+      <p class="use"><strong>Think:</strong> read the source, then generate the answer.</p>
+      <p><strong>Examples:</strong> original Transformer, T5, BART, FLAN-T5.</p>
+    </div>
+
+    <div class="card">
+      <span class="tag pink">Dense Transformer</span>
+      <h2>All parameters participate</h2>
+      <div class="diagram">Token
+ ↓
+Attention
+ ↓
+MLP
+ ↓
+Attention
+ ↓
+MLP
+ ↓
+Output</div>
+      <p><strong>Best for:</strong> simplicity, predictable serving, smaller-to-mid models.</p>
+      <p class="use"><strong>Think:</strong> every token uses the same full stack.</p>
+      <p><strong>Tradeoff:</strong> easy to understand, but compute grows with model size.</p>
+    </div>
+
+    <div class="card">
+      <span class="tag purple">Mixture-of-Experts</span>
+      <h2>Many experts, few active</h2>
+      <div class="diagram">Token
+ ↓
+Router
+ ↓
+Expert 2 + Expert 9
+ ↓
+Combine
+ ↓
+Next layer</div>
+      <p><strong>Best for:</strong> scaling capacity without activating all parameters per token.</p>
+      <p class="use"><strong>Think:</strong> a switchboard sends each token to specialists.</p>
+      <p><strong>Examples:</strong> Switch Transformer, GShard, Mixtral-style, DeepSeek-style MoE.</p>
+    </div>
+
+    <div class="card">
+      <span class="tag orange">State-space / SSM</span>
+      <h2>Mamba-style: sequence state</h2>
+      <div class="diagram">token_t + state_t
+       ↓
+selective state update
+       ↓
+state_{t+1} + output_t</div>
+      <p><strong>Best for:</strong> efficient long-sequence modeling research.</p>
+      <p class="use"><strong>Think:</strong> a learned dynamical system flowing through tokens.</p>
+      <p><strong>Examples:</strong> Mamba and Mamba-like models.</p>
+    </div>
+
+    <div class="card">
+      <span class="tag red">Recurrent</span>
+      <h2>RWKV-style: RNN meets Transformer</h2>
+      <div class="diagram">token_1 → state_1
+token_2 → state_2
+token_3 → state_3
+...
+output_t from state_t</div>
+      <p><strong>Best for:</strong> streaming and efficient inference experiments.</p>
+      <p class="use"><strong>Think:</strong> Transformer-like training, RNN-like generation.</p>
+      <p><strong>Examples:</strong> RWKV-family models.</p>
+    </div>
+
+    <div class="card">
+      <span class="tag blue">Hybrid</span>
+      <h2>Attention + SSM/RNN/MoE</h2>
+      <div class="diagram">Layer 1: full attention
+Layer 2: sliding attention
+Layer 3: SSM
+Layer 4: MoE MLP
+Layer 5: attention
+...</div>
+      <p><strong>Best for:</strong> balancing quality, context length, throughput, and memory.</p>
+      <p class="use"><strong>Think:</strong> keep attention where it helps; replace it where it is expensive.</p>
+      <p><strong>Examples:</strong> modern experimental long-context and efficient LLMs.</p>
+    </div>
+
+    <div class="card">
+      <span class="tag green">System architecture</span>
+      <h2>RAG / tools / agents</h2>
+      <div class="diagram">User query
+   ↓
+Retriever / tools / memory
+   ↓
+LLM
+   ↓
+Answer / action</div>
+      <p><strong>Best for:</strong> grounding, external knowledge, search, tool use, workflow automation.</p>
+      <p class="use"><strong>Important:</strong> this often wraps the model; it is not always a new neural backbone.</p>
+      <p><strong>Examples:</strong> RAG assistants, tool-using agents, coding agents.</p>
+    </div>
+
+  </div>
+
+  <h2 class="section-title">How to choose what to study next</h2>
+
+  <div class="axis">
+    <div class="card">
+      <h2>If you want to understand ChatGPT-like models</h2>
+      <ol>
+        <li>Decoder-only Transformer</li>
+        <li>Causal masking</li>
+        <li>KV cache</li>
+        <li>Rotary position embeddings</li>
+        <li>Grouped-query attention</li>
+        <li>Instruction tuning and RLHF/RLAIF</li>
+      </ol>
+    </div>
+
+    <div class="card">
+      <h2>If you want to understand modern model scaling</h2>
+      <ol>
+        <li>Dense vs sparse models</li>
+        <li>Mixture-of-Experts routing</li>
+        <li>Active vs total parameters</li>
+        <li>Expert load balancing</li>
+        <li>Serving tradeoffs: memory, bandwidth, latency</li>
+      </ol>
+    </div>
+
+    <div class="card">
+      <h2>If you want to understand long context</h2>
+      <ol>
+        <li>Quadratic cost of full attention</li>
+        <li>Sliding-window/local attention</li>
+        <li>KV-cache compression</li>
+        <li>State-space models</li>
+        <li>Hybrid attention + SSM designs</li>
+      </ol>
+    </div>
+
+    <div class="card">
+      <h2>If you want to build applications</h2>
+      <ol>
+        <li>Decoder-only LLM basics</li>
+        <li>Prompting and structured outputs</li>
+        <li>Embeddings and retrieval</li>
+        <li>RAG pipelines</li>
+        <li>Tool calling and agent loops</li>
+      </ol>
+    </div>
+  </div>
+
+  <h2 class="section-title">Quick glossary</h2>
+
+  <details>
+    <summary>Encoder</summary>
+    <p>A stack that reads an input sequence and builds contextual token representations. Usually bidirectional.</p>
+  </details>
+
+  <details>
+    <summary>Decoder</summary>
+    <p>A stack that generates output tokens. In GPT-style models, it is causal: it cannot attend to future tokens.</p>
+  </details>
+
+  <details>
+    <summary>Cross-attention</summary>
+    <p>Attention where the decoder queries the encoder output. Common in encoder–decoder models.</p>
+  </details>
+
+  <details>
+    <summary>Dense model</summary>
+    <p>A model where every token activates the same full set of layers and parameters.</p>
+  </details>
+
+  <details>
+    <summary>Mixture-of-Experts</summary>
+    <p>A sparse architecture where a router sends each token to one or more expert sub-networks.</p>
+  </details>
+
+  <details>
+    <summary>State-space model</summary>
+    <p>A sequence model that updates a hidden state through time, often with better scaling behavior for long sequences.</p>
+  </details>
+
+  <details>
+    <summary>Hybrid model</summary>
+    <p>A model that combines architectural families, such as attention layers plus state-space layers or MoE MLPs.</p>
+  </details>
+
+</div>
+
+<footer>
+  Suggested path: Transformer Explainer → Illustrated GPT-2 → LLM Architecture Gallery → MoE visual guide → Mamba/RWKV papers.
+</footer>
+
+</body>
+</html>
